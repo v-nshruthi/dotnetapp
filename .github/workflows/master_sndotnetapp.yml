@@ -57,7 +57,7 @@ jobs:
             subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Stop Azure Web App
-        run: az webapp stop --name sndotnetapp --resource-group <your-resource-group>
+        run: az webapp stop --name sndotnetapp --resource-group Snambissan
       
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -69,4 +69,4 @@ jobs:
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6482FDB154244E2CB48B2FEE13D347A5 }}
 
       - name: Start Azure Web App
-        run: az webapp start --name sndotnetapp --resource-group <your-resource-group>
+        run: az webapp start --name sndotnetapp --resource-group Snambissan
