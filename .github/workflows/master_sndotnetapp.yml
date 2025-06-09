@@ -77,5 +77,13 @@ jobs:
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_6482FDB154244E2CB48B2FEE13D347A5 }}
 
-      - name: Start Azure Web App
-        run: az webapp start --name sndotnetapp --resource-group Snambissan
+      #- name: Start Azure Web App
+      #  run: az webapp start --name sndotnetapp --resource-group Snambissan
+      - name: Start Azure Web App via REST API
+        run: |
+          curl -X POST \
+          -H "Authorization: Bearer ${{ secrets.AZURE_ACCESS_TOKEN }}" \
+          -H "Content-Length: 0" \
+          https://management.azure.com/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/Snambissan/providers/Microsoft.Web/sites/sndotnetapp/start?api-version=2022-03-01
+
+  
