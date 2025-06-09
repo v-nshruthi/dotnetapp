@@ -1,0 +1,76 @@
+name: Deploy
+ 
+on:
+  workflow_call:
+    inputs:
+      environment_name:
+        required: true
+        type: string
+      resource_group_name:
+        required: true
+        type: string
+      client_id:
+        required: true
+        type: string
+      subscription_id:
+        required: true
+        type: string
+      app_service_name:
+        required: true
+        type: string
+      keyvault_name:
+        required: true
+        type: string
+ 
+permissions:
+  id-token: write
+  contents: read
+ 
+env:
+  PROJECT: PowderCoatings
+ 
+jobs:
+  Deploy:
+    name: Deploy ${{ inputs.environment_name }}
+    environment: ${{ inputs.environment_name }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+ 
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.PROJECT }}-build
+          path: ${{ github.workspace }}/${{ env.PROJECT }}-build
+ 
+      - name: Create Zip Package
+        run: |
+          cd "${{ github.workspace }}/${{ env.PROJECT }}-build"
+          zip -r "${{ env.PROJECT }}.zip" .
+ 
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+ 
+      - name: Stop webapp
+        run: az webapp stop --name sndotnetapp --resource-group Snambissan
+ 
+      # - name: Deploy
+      #   uses: azure/webapps-deploy@v3
+      #   with:
+      #     app-name: ${{ inputs.app_service_name }}
+      #     package: "${{ github.workspace }}/${{ env.PROJECT }}-build"
+      #     clean: true
+ 
+      - name: Deploy to Azure App Service
+        run: |
+          az webapp deployment source config-zip \
+            --name sndotnetapp \
+            --resource-group Snambissan \
+            --src "${{ github.workspace }}/${{ env.PROJECT }}-build/${{ env.PROJECT }}.zip"
+ 
+      - name: Start webapp
+        run: az webapp start --name sndotnetapp --resource-group Snambissan
