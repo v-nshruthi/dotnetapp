@@ -49,12 +49,17 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-      #- name: Login to Azure using OIDC
-      #  uses: azure/login@v1
-      #  with:
-       #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
-       #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-       #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Login to Azure using OIDC
+        uses: azure/login@v1
+        with:
+           client-id: ${{ secrets.AZURE_CLIENT_ID }}
+           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get Azure access token
+        id: get-token
+        run: |
+           echo "##[set-output name=token;]$(az account get-access-token --query accessToken -o tsv)"
 
       #- name: Stop Azure Web App
       #  run: az webapp stop --name sndotnetapp --resource-group Snambissan
@@ -65,8 +70,6 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.AZURE_ACCESS_TOKEN }}" \
             -H "Content-Length: 0" \
             https://management.azure.com/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/Snambissan/providers/Microsoft.Web/sites/sndotnetapp/stop?api-version=2022-03-01
-
-  
       
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
