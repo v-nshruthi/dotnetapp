@@ -59,7 +59,7 @@ jobs:
       - name: Get Azure access token
         id: get-token
         run: |
-           echo "##[set-output name=token;]$(az account get-access-token --query accessToken -o tsv)"
+           echo "token=$(az account get-access-token --query accessToken -o tsv)" >> $GITHUB_OUTPUT
 
       #- name: Stop Azure Web App
       #  run: az webapp stop --name sndotnetapp --resource-group Snambissan
