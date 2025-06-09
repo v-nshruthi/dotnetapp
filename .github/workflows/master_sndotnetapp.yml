@@ -67,7 +67,7 @@ jobs:
       - name: Stop Azure Web App via REST API
         run: |
             curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.AZURE_ACCESS_TOKEN }}" \
+            -H "Authorization: Bearer ${{ steps.get-token.outputs.token }}" \
             -H "Content-Length: 0" \
             https://management.azure.com/subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/Snambissan/providers/Microsoft.Web/sites/sndotnetapp/stop?api-version=2022-03-01
       
